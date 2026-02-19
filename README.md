@@ -3,7 +3,7 @@ Cardiovascular Disease Risk Prediction from Cardiac CT and Risk Factors Using De
 
 
 
-![check](methods_overview.png)
+![check](overview_cvd_,multimodal_dl.png)
 This work introduces an automatic CAC scoring method that uses multi-atlas segmentation for whole heart segmentation (WHS) and a DL model as a supervised classifier for correcting false positives (FP). <br/>
 
 

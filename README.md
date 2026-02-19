@@ -1,46 +1,85 @@
 # Deep-survival-NN_CVD-risk-prediction
-Cardiovascular Disease Risk Prediction from Cardiac CT and Risk Factors Using Deep Survival Networks
+Multimodal CVD risk prediction with automated CAC scoring and DeepSurv
 
 
 
 ![check](overview_cvd_,multimodal_dl.png)
-This work introduces an automatic CAC scoring method that uses multi-atlas segmentation for whole heart segmentation (WHS) and a DL model as a supervised classifier for correcting false positives (FP). <br/>
+
+This repository provides an implementation of a multimodal deep learning framework for cardiovascular disease (CVD) risk prediction that integrates automated coronary artery calcification (CAC) analysis from non-contrast cardiac CT with traditional cardiovascular risk factors using deep survival neural networks.  
+The approach enables fully automated risk estimation without human intervention, and was validated in the Rotterdam Study. <br/>
+<br/>
 
 
 ## Descriptions
-- The repository provides a DL-based FP (of CAC) model.
-- The model is developed by using the [Stanford AIMI COCA dataset](https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa) which is publicly available for research purpose
-- We used the multi-atlas segmentation pipeline implemented by the [Biomedical Imaging Group Rotterdam (BIGR)](https://bigr.nl/)
-- Our work was externally validated on the [Rotterdam Study](https://pubmed.ncbi.nlm.nih.gov/38324224/)
+- The repository implements a multimodal pipeline consisting of:
+  - automated CAC scoring (whole-heart segmentation + candidate lesion detection + deep learning–based false-positive filtering + Agatston scoring), please refer to our previous paper [our previous paper](https://link.springer.com/chapter/10.1007/978-3-031-87756-8_12) and [implementation](https://github.com/hyunho-mo/auto_cac)
+  - CNN-based feature extraction from CAC images
+  - DeepSurv-based survival modeling for time-to-event risk prediction
+- We validated the approach using a population-based cohort from the Rotterdam Study (n=1,802) with up to 10-year follow-up for incident cardiovascular disease. Note that Rotterdam Study data are not publicly available
+- For CAC pipeline development (false-positive detection), we used CAC-annotated CT scans from the public Stanford AIMI COCA dataset (for research use):
+  - [Stanford AIMI COCA dataset](https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa)
+- The whole-heart segmentation step uses a multi-atlas segmentation approach as developed and used in the Biomedical Imaging Group Rotterdam (BIGR):
+  - [Biomedical Imaging Group Rotterdam (BIGR)](https://bigr.nl/)
 
-## Run
-Generate labeled patches with annotated images 
+## Implemented Methods (as in the paper)
+- Cox model using traditional risk factors (Cox_trf)
+- DeepSurv using traditional risk factors (DL_trf)
+- Cox model using risk factors + semi-automatic CAC scores (Cox_trf+semi)
+- Cox model using risk factors + automated CAC scores (Cox_trf+auto)
+- DeepSurv using risk factors + automated CAC scores (DL_trf+auto)
+- Multimodal deep survival model using CAC images + risk factors (DL_trf+CAC)
+- (Optional ablations) multimodal models using heart images or full CT images
+
+## Run (Example Workflow)
+
+### Data preparation 
+To generate CSV files in time-to-event representation
 ```bash
-python3 patch_prep.py -patch_size 45
+python3 study_population.py
+python3 cvd_outcomes.py
+python3 trf_predictors_excluded.py
 ```
-Split the patch data into non-overlapping 5 folds w.r.t subjects  
+
+To generate hdf5 files containing multimodal data, for deep survival NN
 ```bash
-python3 k-fold_prep.py -normalize
+python3  generate_hdf5_kfold_ten_computed.py
 ```
-Evaluate binary classification performance and save the trained models
+
+### Data preparation 
+Python scripts for deep survival NN implementation and experiments are in 
 ```bash
-python3 fp_classifier_train_subject_fold.py -batch_size 32 -n_epochs 100 -lr 1e-4
+Deep-survival-NN_CVD-risk-prediction/deep_survival_nn
 ```
-Compute CAC scores
+Note that our implementation is based on the code repository for [DAFT](https://github.com/ai-med/DAFT) <br/>
+
+
+Train multimodal deep survival neural network.
 ```bash
-python3 coca_internal_eval.py -trained_model 'fp_vgg_trained_model_3.pth'
+python3 train_kfold_128.py
 ```
-Assess the agreement between computed scores and reference scores
+
+Test the trained network.
 ```bash
-python3 coca_score_agreement.py
+python3 test_kfold_128.py
 ```
+
+Evaluate discrimination and calibration performance
+```bash
+python3 model_comparison_c-statistics_plot_rs_revised.py
+python3 corr_plotting_full_fold_merged_ds.py
+python3 calibration_plotting_all_methods_recalibration_cv.py
+```
+
+## Data Availability
+- The Rotterdam Study data used in this work cannot be publicly shared due to privacy regulations and data use agreements.
+- Researchers interested in accessing Rotterdam Study data should follow the official data access procedures of the cohort.
+- Public datasets such as the Stanford AIMI COCA dataset may be used for CAC-related development and testing.
+
 
 ## References
 ```
 Mo, Hyunho, Maryam Kavousi, Maarten JG Leening, Daniel Bos, and Esther E. Bron. "Cardiovascular Disease Risk Prediction from Cardiac CT and Risk Factors Using Deep Survival Networks." .
 ```
-
-
 
 ## Acknowledgments
 ```

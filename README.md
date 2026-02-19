@@ -45,7 +45,7 @@ To generate hdf5 files containing multimodal data, for deep survival NN
 python3  generate_hdf5_kfold_ten_computed.py
 ```
 
-### Data preparation 
+### Train and test
 Python scripts for deep survival NN implementation and experiments are in 
 ```bash
 Deep-survival-NN_CVD-risk-prediction/deep_survival_nn
@@ -63,6 +63,7 @@ Test the trained network.
 python3 test_kfold_128.py
 ```
 
+### Evaluation
 Evaluate discrimination and calibration performance
 ```bash
 python3 model_comparison_c-statistics_plot_rs_revised.py

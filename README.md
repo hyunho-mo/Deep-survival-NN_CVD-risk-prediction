@@ -79,7 +79,7 @@ python3 calibration_plotting_all_methods_recalibration_cv.py
 
 ## References
 ```
-Mo, Hyunho, Maryam Kavousi, Maarten JG Leening, Daniel Bos, and Esther E. Bron. "Cardiovascular Disease Risk Prediction from Cardiac CT and Risk Factors Using Deep Survival Networks." .
+Mo, Hyunho, Maarten JG Leening, Maryam Kavousi, Daniel Bos, and Esther E. Bron. "Cardiovascular Disease Risk Prediction from Cardiac CT and Risk Factors Using Deep Survival Networks." To be submitted to eClinicalMedicine.
 ```
 
 ## Acknowledgments
